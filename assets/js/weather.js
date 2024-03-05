@@ -1,7 +1,7 @@
 import { weather_data } from "./data.js";
 
 
-let loadDayForecastData = (weather_data) => {
+let loadDayForecastData = () => {
 	let [guayaquil,ambato,tena] =weather_data
     console.log(guayaquil)
     let {city,date,maxtemperature,mintemperature,cloudiness,wind,rainfall,forecast_today}=guayaquil
@@ -57,7 +57,7 @@ let loadDayForecastData = (weather_data) => {
 
 }
 
-let loadWeekForecastData = (weather_data) => {
+let loadWeekForecastData = () => {
 	
     let [guayaquil,ambato,tena] =weather_data
     let {forecast_week}=guayaquil
@@ -81,5 +81,14 @@ let loadWeekForecastData = (weather_data) => {
 }
 
 
-loadDayForecastData(weather_data);
-loadWeekForecastData(weather_data);
+document.addEventListener("DOMContentLoaded", (event) => {
+    loadDayForecastData();
+    let btn = document.getElementById("loadinfo")
+    btn.addEventListener("click",loadWeekForecastData)
+    
+});
+
+
+
+/*loadDayForecastData();
+loadWeekForecastData(weather_data);*/
