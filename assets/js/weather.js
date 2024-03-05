@@ -56,10 +56,10 @@ let loadDayForecastData = () => {
 
 
 }
-
+let datos_cargados= false
 let loadWeekForecastData = () => {
-	
-    let [guayaquil,ambato,tena] =weather_data
+	if (datos_cargados==false){
+        let [guayaquil,ambato,tena] =weather_data
     let {forecast_week}=guayaquil
     
     for (let index=0;index <forecast_week.length;index++){
@@ -76,16 +76,21 @@ let loadWeekForecastData = () => {
           <div class="ms-4"><i class="material-icons fs-2 me-1 rainy">${icon}</i></div>
         </div>
         </li>`
+        datos_cargados=true
     }
+    }
+    else{
+        console.log("Los datos ya estan cargados")
+    }
+    
 	
 }
 
 
 document.addEventListener("DOMContentLoaded", (event) => {
     loadDayForecastData();
-    let btn = document.getElementById("loadinfo")
-    btn.addEventListener("click",loadWeekForecastData)
-    
+    let btn = document.getElementById("loadinfo");
+    btn.addEventListener("click",loadWeekForecastData);  
 });
 
 
