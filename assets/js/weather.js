@@ -1,12 +1,26 @@
 import { weather_data } from "./data.js";
 
 
-let loadDayForecastData = () => {
-	let [Guayaquil,Ambato,Tena] =weather_data
-    let {city,date,maxtemperature,mintemperature,cloudiness,wind,rainfall,forecast_today}=Guayaquil
-    let [tarde,noche]=forecast_today
-
+let loadDayForecastData = (valorInicial="Guayaquil") => {/*Valor por defecto de la funcion Guayaquil*/
     
+    let arreglo = valorInicial
+	let [Guayaquil,Ambato,Tena] =weather_data
+    /*Con el if se valida en caso de que la ciudad seleccionada cambie*/
+    if (valorInicial == "Guayaquil"){
+        arreglo = Guayaquil;
+    }
+    if (valorInicial=="Ambato"){
+        arreglo=Ambato;
+    }
+    if (valorInicial=="Tena"){
+        arreglo=Tena;
+    }
+
+    /*Una vez selecionado el arreglo de la ciudad se desestructuran los datos*/
+    let {city,date,maxtemperature,mintemperature,cloudiness,wind,rainfall,forecast_today}=arreglo;
+    let [tarde,noche]=forecast_today;
+
+    /*Se adjuntan los datos en la plantilla HTML*/
 
     let location=document.getElementById("city")
     location.innerHTML= city
@@ -53,14 +67,18 @@ let loadDayForecastData = () => {
     let night_textHTML=document.getElementById("night_text")
     night_textHTML.innerHTML=noche.text
 
+    return valorInicial
 
 }
+
+
 let datos_cargados= false
 let loadWeekForecastData = () => {
 	if (datos_cargados==false){
-        let [guayaquil] =weather_data
+        let [Guayaquil,Ambato,Tena] =weather_data;
+        
        
-        let {forecast_week}=guayaquil
+        let {forecast_week}=Guayaquil;
         
         for (let index=0;index <forecast_week.length;index++){
             let {day,text,date,temperature,icon}=forecast_week[index]
@@ -87,31 +105,34 @@ let loadWeekForecastData = () => {
 }
 
 
-document.addEventListener("DOMContentLoaded", (event) => {
+document.addEventListener("DOMContentLoaded", (event) => {/* Se cargan los elementos en el DOM*/
+    /*Se ejecuta la funcion de carga de datos del dia*/
     loadDayForecastData();
-    let btn = document.getElementById("loadinfo");
-    btn.addEventListener("click",loadWeekForecastData);  
+
+    /*Añadir los elementos al menu de seleccion de ciudades*/
     let menu = document.getElementById("dropdownMenuButton")
     for(let index=0;index<weather_data.length;index++){
         let ciudad = weather_data[index].city
         let template_menu=`<option class="dropdown-item" value="${ciudad}">${ciudad}</option>`
         menu.innerHTML+=template_menu
     }
-
+    
+    /*Evento change para obtener el valor al seleccionar una ciudad distinta*/
     menu.addEventListener("change",(e)=>{
         for(let index=0;index<weather_data.length;index++){
             let ciudad = weather_data[index].city
             if (e.target.value == ciudad){
-                loadDayForecastData()
+                loadDayForecastData(e.target.value) /*Se ejecuta la funcion del día con el valor de la ciudad correspondiente*/
                 console.log("se ejecuta la funcion")
-
             }
-
         }
     })
-    
 
-
+    /*Se obtiene el boton cargar y se le adjunta una funcion*/
+    let btn = document.getElementById("loadinfo");
+    btn.addEventListener("click",()=>{
+        loadWeekForecastData()
+    });
     
     
 });
