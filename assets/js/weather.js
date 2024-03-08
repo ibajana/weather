@@ -120,6 +120,7 @@ document.addEventListener("DOMContentLoaded", (event) => {// Se cargan los eleme
     btn.addEventListener("click",()=>{
         loadWeekForecastData()
         
+        
     });
     
     
