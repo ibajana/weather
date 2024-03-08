@@ -1,23 +1,17 @@
 import { weather_data } from "./data.js";
 
+let ciudadSeleccionada; //Defino la variable de la ciudad que se selecciona para reutilizarla dentro de la variables 
+let loadDayForecastData = (ciudadInicial="Guayaquil") => {//Valor por defecto de la funcion Guayaquil
 
-let loadDayForecastData = (valorInicial="Guayaquil") => {/*Valor por defecto de la funcion Guayaquil*/
-    
-    let arreglo = valorInicial
 	let [Guayaquil,Ambato,Tena] =weather_data
-    /*Con el if se valida en caso de que la ciudad seleccionada cambie*/
-    if (valorInicial == "Guayaquil"){
-        arreglo = Guayaquil;
-    }
-    if (valorInicial=="Ambato"){
-        arreglo=Ambato;
-    }
-    if (valorInicial=="Tena"){
-        arreglo=Tena;
-    }
+    
+    //uso de operadores ternarios
+    ciudadSeleccionada= ciudadInicial==="Ambato"?Ambato:
+                        ciudadInicial==="Tena"?Tena:Guayaquil;
 
-    /*Una vez selecionado el arreglo de la ciudad se desestructuran los datos*/
-    let {city,date,maxtemperature,mintemperature,cloudiness,wind,rainfall,forecast_today}=arreglo;
+
+    //Una vez selecionado el arreglo de la ciudad se desestructuran los datos
+    let {city,date,maxtemperature,mintemperature,cloudiness,wind,rainfall,forecast_today}=ciudadSeleccionada;
     let [tarde,noche]=forecast_today;
 
     /*Se adjuntan los datos en la plantilla HTML*/
@@ -65,51 +59,41 @@ let loadDayForecastData = (valorInicial="Guayaquil") => {/*Valor por defecto de 
     night_forecastHTML.innerHTML=noche.forecast
 
     let night_textHTML=document.getElementById("night_text")
-    night_textHTML.innerHTML=noche.text
-
-    return valorInicial
-
+    night_textHTML.innerHTML=noche.text   
 }
 
 
-let datos_cargados= false
+
 let loadWeekForecastData = () => {
-	if (datos_cargados==false){
-        let [Guayaquil,Ambato,Tena] =weather_data;
-        
-       
-        let {forecast_week}=Guayaquil;
-        
-        for (let index=0;index <forecast_week.length;index++){
-            let {day,text,date,temperature,icon}=forecast_week[index]
-            console.log(text)
-            let element=document.getElementById("lista")
-            element.innerHTML+= `<li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
-            <div class="d-flex flex-column">
-            <h6 class="mb-1 text-dark font-weight-bold text-sm">${text}</h6>
-            <span class="text-xs">${date}</span>
-            </div>
-            <div class="d-flex align-items-center ">
-            <span class="font-weight-bold text-dark mx-2">${temperature.max}</span> |  <span class="text-dark mx-2">${temperature.min}</span>
-            <div class="ms-4"><i class="material-icons fs-2 me-1 rainy">${icon}</i></div>
-            </div>
-            </li>`
-            datos_cargados=true
-    }
-    }
-    else{
-        alert("Los datos ya estan cargados")
-    }
-    
 	
+    let {forecast_week}=ciudadSeleccionada;//Reutilización del valor de la ciudad seleccionada
+    let element=document.getElementById("lista")
+    element.innerHTML="" // al usar este inner dentro de esta funcion se limpian la lista antes de renderizar los nuevos elementos
+    // esto se hace para evitar que se carguen los elementos infinitamente
+        
+    //cargo los datos de la semana en el DOM
+    for (let index=0;index <forecast_week.length;index++){
+        let {day,text,date,temperature,icon}=forecast_week[index]
+        console.log(text)
+        element.innerHTML+= `<li class="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
+        <div class="d-flex flex-column">
+        <h6 class="mb-1 text-dark font-weight-bold text-sm">${text}</h6>
+        <span class="text-xs">${date}</span>
+        </div>
+        <div class="d-flex align-items-center ">
+        <span class="font-weight-bold text-dark mx-2">${temperature.max}</span> |  <span class="text-dark mx-2">${temperature.min}</span>
+        <div class="ms-4"><i class="material-icons fs-2 me-1 rainy">${icon}</i></div>
+        </div>
+        </li>`
+    }
 }
 
 
-document.addEventListener("DOMContentLoaded", (event) => {/* Se cargan los elementos en el DOM*/
-    /*Se ejecuta la funcion de carga de datos del dia*/
-    loadDayForecastData();
+document.addEventListener("DOMContentLoaded", (event) => {// Se cargan los elementos en el DOM
+    
+    loadDayForecastData(); //Se ejecuta la función y carga los datos iniciales
 
-    /*Añadir los elementos al menu de seleccion de ciudades*/
+    //Añade las opciones al menu
     let menu = document.getElementById("dropdownMenuButton")
     for(let index=0;index<weather_data.length;index++){
         let ciudad = weather_data[index].city
@@ -117,21 +101,25 @@ document.addEventListener("DOMContentLoaded", (event) => {/* Se cargan los eleme
         menu.innerHTML+=template_menu
     }
     
-    /*Evento change para obtener el valor al seleccionar una ciudad distinta*/
+    //Evento change para obtener el valor al seleccionar una ciudad distinta
     menu.addEventListener("change",(e)=>{
+        let element=document.getElementById("lista")
+        element.innerHTML="" // Se limpia la lista cada vez que el valor del evento change cambia
+        
         for(let index=0;index<weather_data.length;index++){
             let ciudad = weather_data[index].city
             if (e.target.value == ciudad){
-                loadDayForecastData(e.target.value) /*Se ejecuta la funcion del día con el valor de la ciudad correspondiente*/
-                console.log("se ejecuta la funcion")
+                loadDayForecastData(e.target.value) //Se ejecuta la funcion del día con el valor de la ciudad correspondiente*/
+                console.log("se ejecuta la funcion") //Se imprime por pantalla el valor de la ciudad seleccionada
             }
         }
     })
 
-    /*Se obtiene el boton cargar y se le adjunta una funcion*/
+    //Se obtiene el boton cargar y se le adjunta una funcion
     let btn = document.getElementById("loadinfo");
     btn.addEventListener("click",()=>{
         loadWeekForecastData()
+        
     });
     
     
